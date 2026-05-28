@@ -1,0 +1,31 @@
+---
+import Layout from '../components/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import CharactersGrid from '../components/CharactersGrid.astro';
+import PosterGallery from '../components/PosterGallery.astro';
+import StatsBar from '../components/StatsBar.astro';
+import Story from '../components/Story.astro';
+import BodyShots from '../components/BodyShots.astro';
+import Comments from '../components/Comments.astro';
+import Footer from '../components/Footer.astro';
+import AuthLauncher from '../components/AuthLauncher.jsx';
+---
+
+<Layout title="Recessed Minds">
+  <Nav>
+    <AuthLauncher client:only="preact" slot="actions" showTrigger={true} />
+  </Nav>
+
+  <main id="main">
+    <Hero />
+    <CharactersGrid />
+    <PosterGallery />
+    <StatsBar />
+    <Story />
+    <BodyShots />
+    <Comments />
+  </main>
+
+  <Footer />
+</Layout>
