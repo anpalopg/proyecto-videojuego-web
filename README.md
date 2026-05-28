@@ -1,89 +1,76 @@
 # Recessed Minds
 
-Proyecto full stack con:
+Landing oficial de **Recessed Minds**, un thriller psicológico de supervivencia. Construida con Astro + Preact, desplegada en Vercel y conectada a Supabase.
 
-- `frontend/`: landing en Astro + Preact
-- `backend/`: API de autenticación con Express + MongoDB
+## Stack
+
+| Capa | Tecnología |
+|------|------------|
+| Framework | Astro 5 (`output: 'server'`) |
+| UI interactiva | Preact islands |
+| Backend | Astro API Routes (SSR) |
+| Base de datos + Auth | Supabase (PostgreSQL + GoTrue) |
+| Deploy | Vercel |
+| CSS | CSS nativo con custom properties |
 
 ## Requisitos
 
-- Node.js `>= 22.12.0` (recomendado usar la versión indicada en `frontend/package.json`)
+- Node.js `>= 22.12.0`
 - npm
-- MongoDB (local o Atlas)
+- Proyecto en [Supabase](https://supabase.com)
 
-## 1) Clonar e instalar dependencias
-
-Desde la raíz del repo:
+## Desarrollo local
 
 ```bash
-git clone <URL_DEL_REPO>
-cd Proyecto-videojuego
-
-# Backend
-cd backend
-npm install
-
-# Frontend
-cd ../frontend
+git clone https://github.com/felipe-pineros/proyecto-videojuego.git
+cd proyecto-videojuego/frontend
 npm install
 ```
 
-## 2) Configurar variables de entorno (backend)
-
-En `backend/.env` define al menos:
+Crea el archivo `frontend/.env.local` con tus credenciales de Supabase:
 
 ```env
-PORT=3000
-MONGODB_URI=<tu_conexion_mongodb>
-JWT_SECRET=<tu_clave_secreta>
+PUBLIC_SUPABASE_URL=https://<tu-proyecto>.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 ```
 
-Notas:
-
-- El frontend consume la API en `http://localhost:3000/api/auth` (ver `frontend/src/lib/api.js`).
-- Si cambias `PORT`, actualiza también esa URL en `frontend/src/lib/api.js`.
-
-## 3) Ejecutar en desarrollo
-
-Abre **dos terminales**.
-
-Terminal 1 (backend):
+Levanta el servidor de desarrollo:
 
 ```bash
-cd backend
-npm run dev
+npm run dev   # http://localhost:4321
 ```
 
-Terminal 2 (frontend):
+## Scripts
 
-```bash
-cd frontend
-npm run dev
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` | Build de producción |
+| `npm run preview` | Preview del build local |
+
+## Despliegue
+
+El proyecto está configurado para Vercel. Cada push a `main` dispara un redeploy automático.
+
+Para desplegar desde cero: importa el repo en [vercel.com](https://vercel.com), establece el **Root Directory** en `frontend` y añade las tres variables de entorno de Supabase.
+
+## Estructura
+
 ```
-
-## 4) URLs locales
-
-- Frontend: `http://localhost:4321`
-- Backend: `http://localhost:3000`
-- Health check backend: `http://localhost:3000/`
-
-## Scripts útiles
-
-### Backend (`backend/`)
-
-- `npm run dev`: levanta servidor con nodemon
-- `npm start`: levanta servidor con node
-
-### Frontend (`frontend/`)
-
-- `npm run dev`: entorno de desarrollo
-- `npm run build`: build de producción
-- `npm run preview`: previsualiza el build
-
-## Build de producción (frontend)
-
-```bash
-cd frontend
-npm run build
-npm run preview
+frontend/
+├── src/
+│   ├── pages/
+│   │   ├── index.astro          # Landing principal
+│   │   ├── dashboard.astro      # Dashboard del usuario (protegido)
+│   │   ├── 404.astro            # Página de error personalizada
+│   │   └── api/v1/              # API routes (auth + comments)
+│   ├── components/              # Astro y Preact islands
+│   ├── lib/
+│   │   ├── api.js               # Cliente fetch del frontend
+│   │   └── supabase.ts          # Clientes Supabase + helpers
+│   └── styles/
+│       └── global.css
+└── public/
+    └── images/
 ```
