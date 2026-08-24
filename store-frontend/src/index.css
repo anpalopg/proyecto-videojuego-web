@@ -1,0 +1,70 @@
+/* ── Steam-dark theme token overrides for Ant Design ── */
+:root {
+  --steam-bg: #0b0b1a;
+  --steam-surface: #16213e;
+  --steam-card: #1b2838;
+  --steam-card-hover: #2a475e;
+  --steam-accent: #8b5cf6;
+  --steam-accent-bright: #a78bfa;
+  --steam-purple: #6d28d9;
+  --steam-purple-deep: #3b0764;
+  --steam-text: #c6d4df;
+  --steam-text-dim: #7a8fa6;
+  --steam-border: rgba(139, 92, 246, 0.2);
+  --steam-green: #67c23a;
+  --steam-price: #a4d007;
+  --steam-red: #c0392b;
+  --steam-discount: #4c6b22;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--steam-bg);
+  color: var(--steam-text);
+  font-family: 'Motiva Sans', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* Ant Design dark overrides */
+.ant-btn-primary {
+  background: var(--steam-purple) !important;
+  border-color: var(--steam-purple) !important;
+}
+.ant-btn-primary:hover {
+  background: var(--steam-accent) !important;
+  border-color: var(--steam-accent) !important;
+}
+
+.ant-input, .ant-input-password {
+  background: rgba(13, 17, 30, 0.8) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
+  color: var(--steam-text) !important;
+}
+.ant-input:focus, .ant-input-focused,
+.ant-input-password:focus, .ant-input-affix-wrapper-focused {
+  border-color: var(--steam-accent) !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
+}
+.ant-input::placeholder { color: var(--steam-text-dim) !important; }
+.ant-input-affix-wrapper { background: rgba(13,17,30,0.8) !important; border-color: rgba(139,92,246,0.3) !important; }
+.ant-input-affix-wrapper input { background: transparent !important; }
+.ant-input-suffix .anticon { color: var(--steam-text-dim) !important; }
+
+.ant-form-item-label > label { color: var(--steam-text-dim) !important; font-size: 12px; letter-spacing: 1px; }
+.ant-form-item-explain-error { color: #ff7875 !important; }
+
+.ant-checkbox-wrapper { color: var(--steam-text-dim) !important; }
+.ant-checkbox-inner { background: rgba(13,17,30,0.8) !important; border-color: rgba(139,92,246,0.3) !important; }
+.ant-checkbox-checked .ant-checkbox-inner { background: var(--steam-purple) !important; border-color: var(--steam-purple) !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--steam-bg); }
+::-webkit-scrollbar-thumb { background: var(--steam-purple); border-radius: 4px; }

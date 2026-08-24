@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clusters Steam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<style>
+  :root{
+    --bg: #0a0d13;
+    --bg-elevated: #0e131c;
+    --panel: #121826;
+    --panel-alt: #161e2c;
+    --border: rgba(255,255,255,.07);
+    --border-strong: rgba(255,255,255,.14);
+    --text-primary: rgba(255,255,255,.94);
+    --text-secondary: rgba(255,255,255,.60);
+    --text-muted: rgba(255,255,255,.36);
+
+    --accent-blue: #6f9dc6;
+    --accent-cyan: #4fa8b0;
+    --accent-emerald: #57a37f;
+    --accent-amber: #c99a52;
+    --accent-violet: #8d84c9;
+    --accent-rose: #b17f92;
+    --accent-gray: #7a8699;
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Roboto Mono', Consolas, monospace;
+
+    --shadow-card: 0 1px 1px rgba(0,0,0,.5), 0 14px 28px -18px rgba(0,0,0,.7);
+    --shadow-pop: 0 4px 8px rgba(0,0,0,.35), 0 20px 40px -16px rgba(0,0,0,.6);
+    --radius-lg: 12px;
+    --radius: 9px;
+    --radius-sm: 6px;
+    --ease: cubic-bezier(.4,0,.2,1);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 32px 22px 48px; }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 22px; margin-bottom: 26px;
+  }
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 11px 5px 8px; border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.01));
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--text-secondary); margin-bottom: 12px;
+  }
+  .status-pill .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent-emerald);
+    box-shadow: 0 0 0 3px rgba(87,163,127,.16);
+  }
+  h1 { font-size: 27px; margin: 0; font-weight: 700; letter-spacing: -0.015em; color: var(--text-primary); }
+  .title-row { display:flex; align-items:center; gap:11px; }
+  .steam-logo { width:32px; height:32px; object-fit:contain; }
+  .sub { color: var(--text-secondary); font-size: 13px; margin-top: 5px; font-weight: 400; }
+  .meta-box {
+    text-align: right; background: var(--panel-alt); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 9px 14px;
+  }
+  .meta-box .meta-label { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+  .meta-box .meta-value { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-top: 3px; }
+
+  /* ---------- KPI grid ---------- */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+    gap: 12px; margin-bottom: 28px;
+  }
+  .kpi {
+    position: relative; overflow: hidden;
+    background:
+      linear-gradient(160deg, rgba(255,255,255,.045), rgba(255,255,255,0) 55%),
+      var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 15px 16px;
+    box-shadow: var(--shadow-card);
+    transition: transform 180ms var(--ease), border-color 180ms var(--ease), box-shadow 180ms var(--ease);
+  }
+  .kpi:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+  .kpi-label {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--text-muted); margin-bottom: 9px;
+  }
+  .kpi-label .swatch { width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0; }
+  .kpi-value { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; line-height: 1; }
+  .kpi-note { font-size: 11px; color: var(--text-secondary); margin-top: 8px; font-weight: 400; }
+
+  /* ---------- Section header ---------- */
+  .section-head { margin-bottom: 16px; padding-bottom: 11px; border-bottom: 1px solid var(--border); }
+  .section-eyebrow { font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: .11em; color: var(--text-muted); margin-bottom: 3px; }
+  .section-title { font-size: 15px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.005em; }
+
+  /* ---------- Panels ---------- */
+  .panel {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 20px; box-shadow: var(--shadow-card);
+  }
+  .map-panel { margin-bottom: 16px; }
+
+  #map {
+    width: 100%; height: 500px; border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: #0a0e16;
+  }
+
+  /* ---------- Leaflet overrides ---------- */
+  .leaflet-popup-content-wrapper {
+    background: #131a27; color: var(--text-primary); border: 1px solid var(--border-strong);
+    border-radius: 10px; font-family: var(--font-sans); box-shadow: var(--shadow-pop);
+  }
+  .leaflet-popup-tip { background: #131a27; border: 1px solid var(--border-strong); box-shadow: none; }
+  .leaflet-popup-content { margin: 13px 15px; }
+  .popup-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin: 0 0 2px; letter-spacing: -0.005em; }
+  .popup-sub { font-size: 11px; color: var(--text-muted); margin: 0 0 9px; font-family: var(--font-mono); }
+  .popup-row { display:flex; justify-content:space-between; align-items:baseline; gap:12px; font-size:11.5px; padding: 5px 0; border-top:1px solid var(--border); color: var(--text-secondary); }
+  .popup-row b { color: var(--accent-blue); font-family: var(--font-mono); font-weight: 600; }
+  .popup-note { font-size: 11px; color: var(--text-secondary); margin-top: 9px; line-height: 1.55; }
+
+  .city-label {
+    background: rgba(10,13,19,.82) !important; border: 1px solid var(--border-strong) !important;
+    border-radius: 5px !important; box-shadow: none !important;
+    color: var(--text-secondary) !important; font-family: var(--font-mono) !important;
+    font-size: 10px !important; padding: 2px 6px !important; font-weight: 500;
+  }
+  .city-label::before { display: none; }
+
+  /* ---------- Legend ---------- */
+  .legend-box {
+    display:flex; flex-wrap:wrap; gap: 20px; margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--border); font-size: 11.5px; color: var(--text-secondary);
+  }
+  .legend-item { display:flex; align-items:center; gap: 8px; }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 50%; flex-shrink:0; border: 1px solid rgba(255,255,255,.18); }
+  .legend-size-demo { display:flex; align-items:center; gap:8px; }
+  .legend-size-demo .c1, .legend-size-demo .c2, .legend-size-demo .c3 { border-radius:50%; background: var(--accent-blue); opacity:.55; }
+  .legend-size-demo .c1 { width:8px; height:8px; }
+  .legend-size-demo .c2 { width:14px; height:14px; }
+  .legend-size-demo .c3 { width:22px; height:22px; }
+
+  /* ---------- Two column: node list + detail ---------- */
+  .two-col-map { display: grid; grid-template-columns: 1.05fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 900px) { .two-col-map { grid-template-columns: 1fr; } }
+
+  .node-list { display: flex; flex-direction: column; gap: 4px; max-height: 330px; overflow-y: auto; padding-right: 4px; }
+  .node-row {
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: var(--radius-sm); cursor: pointer;
+    border: 1px solid transparent; transition: background 150ms var(--ease), border-color 150ms var(--ease);
+  }
+  .node-row:hover { background: rgba(255,255,255,.035); }
+  .node-row.active { background: rgba(111,157,198,.10); border-color: rgba(111,157,198,.35); }
+  .node-row .n-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .node-row .n-name { font-size: 12.5px; font-weight: 500; color: var(--text-primary); }
+  .node-row .n-country { font-size: 10.5px; color: var(--text-muted); font-weight: 400; margin-top: 1px; }
+  .node-row .n-cap { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-secondary); text-align: right; white-space: nowrap; }
+  .node-row .n-bar-track { width: 54px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.07); margin-top: 4px; overflow: hidden; }
+  .node-row .n-bar-fill { height: 100%; border-radius: 2px; }
+
+  .detail-panel { display: flex; flex-direction: column; }
+  .detail-empty { color: var(--text-muted); font-size: 12.5px; line-height: 1.6; margin: auto; text-align: center; padding: 20px 10px; }
+  .detail-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  .detail-name { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+  .detail-loc { font-size: 12px; color: var(--text-secondary); margin-top: 3px; font-family: var(--font-mono); }
+  .detail-badge {
+    font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+    padding: 4px 9px; border-radius: 999px; border: 1px solid var(--border-strong); white-space: nowrap;
+  }
+  .detail-stat-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .detail-stat { flex: 1; background: var(--panel-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .detail-stat .ds-label { font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 5px; }
+  .detail-stat .ds-value { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .detail-note { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; border-top: 1px solid var(--border); padding-top: 13px; }
+
+  /* ---------- Region table ---------- */
+  .two-col { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+  table.region-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.region-table th {
+    text-align: left; font-size: 9.5px; text-transform: uppercase; letter-spacing:.07em;
+    color: var(--text-muted); font-weight: 600; padding: 0 8px 10px; font-family: var(--font-mono);
+  }
+  table.region-table th.num, table.region-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.region-table td { padding: 10px 8px; border-top: 1px solid var(--border); color: var(--text-primary); font-weight: 500; transition: background 150ms var(--ease); }
+  table.region-table tr { transition: background 150ms var(--ease); }
+  table.region-table tr:hover td { background: rgba(255,255,255,.03); }
+  table.region-table td.num { font-family: var(--font-mono); color: var(--text-secondary); font-weight: 500; }
+  table.region-table .served-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  table.region-table .served-track { width: 46px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.07); overflow: hidden; }
+  table.region-table .served-fill { height: 100%; border-radius: 2px; }
+  table.region-table .region-name { display: flex; align-items: center; gap: 8px; }
+  table.region-table .region-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .partner-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(115px,1fr)); gap: 9px; margin-top: 2px; }
+  .partner-chip {
+    border: 1px solid var(--border); background: var(--panel-alt); border-radius: var(--radius-sm);
+    padding: 10px 11px; font-size: 11.5px; color: var(--text-primary); font-weight: 500;
+    transition: border-color 150ms var(--ease), transform 150ms var(--ease);
+  }
+  .partner-chip:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+
+  /* ---------- Methodology ---------- */
+  details.methodology {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 16px 20px; margin-bottom: 18px;
+  }
+  details.methodology summary {
+    cursor: pointer; list-style: none; outline: none;
+    display:flex; align-items:center; justify-content: space-between; gap: 10px;
+  }
+  details.methodology summary::-webkit-details-marker { display: none; }
+  .summary-label {
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--text-secondary); font-family: var(--font-mono); font-weight: 600;
+    display: flex; align-items: center; gap: 9px;
+  }
+  .summary-label .chip { width: 6px; height: 6px; border-radius: 2px; background: var(--accent-amber); }
+  .chevron { width: 9px; height: 9px; border-right: 1.5px solid var(--text-muted); border-bottom: 1.5px solid var(--text-muted); transform: rotate(45deg); transition: transform 200ms var(--ease); margin-right: 2px; }
+  details[open] .chevron { transform: rotate(-135deg); }
+  .methodology p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; margin: 12px 0 0; }
+  .methodology b { color: var(--text-primary); font-weight: 600; }
+  .methodology .src { font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); }
+
+  #mapError, #tileWarn { display:none !important; }
+
+  footer { text-align:center; font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 10px; letter-spacing: .02em; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.16); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+            <div class="title-row">
+        <img class="steam-logo" src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" alt="Steam">
+        <h1>Clusters Steam</h1>
+      </div>
+      <div class="sub">Arquitectura global de clusters y nodos de distribución de Steam</div>
+    </div>
+    <div class="meta-box">
+      <div class="meta-label">Última medición documentada</div>
+      <div class="meta-value">Feb–Oct 2023 (tráfico) · PeeringDB 2023 (nodos)</div>
+    </div>
+  </header>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label"><span class="swatch" style="background:var(--accent-blue)"></span>Tráfico medio global</div>
+      <div class="kpi-value">15 Tbps</div>
+      <div class="kpi-note">Feb–oct 2023, IIJ Lab</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><span class="swatch" style="background:var(--accent-amber)"></span>Pico — lanzamiento CS2</div>
+      <div class="kpi-value">85 Tbps</div>
+      <div class="kpi-note">28 sep. 2023</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><span class="swatch" style="background:var(--accent-rose)"></span>Pico máximo registrado</div>
+      <div class="kpi-value">146 Tbps</div>
+      <div class="kpi-note">Feb–oct 2023, IIJ Lab</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><span class="swatch" style="background:var(--accent-emerald)"></span>Ciudades con caché confirmada</div>
+      <div class="kpi-value">20</div>
+      <div class="kpi-note">27 DC con connection managers</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><span class="swatch" style="background:var(--accent-cyan)"></span>Servidores de caché operados</div>
+      <div class="kpi-value">152 → 193</div>
+      <div class="kpi-note">Crecimiento durante el estudio, 2023</div>
+    </div>
+  </div>
+
+  <div class="panel map-panel">
+    <div class="section-head">
+      <div class="section-eyebrow">Mapa global</div>
+      <div class="section-title">Nodos documentados de caché y connection manager</div>
+    </div>
+    <div id="map"></div>
+    <div id="mapError">No se pudo cargar Leaflet.js desde el CDN. Verifica tu conexión a internet o que ningún bloqueador de contenido esté impidiendo la carga de cdnjs.cloudflare.com, y recarga la página.</div>
+    <div id="tileWarn">El tileset oscuro (CartoDB) no cargó — usando OpenStreetMap con filtro oscuro como respaldo.</div>
+    <div class="legend-box">
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--accent-blue);"></span>Caché + Connection Manager confirmados</div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--accent-amber);"></span>Solo Connection Manager</div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--accent-gray);"></span>PeeringDB, sin confirmar vía API</div>
+      <div class="legend-item legend-size-demo"><span class="c1"></span><span class="c2"></span><span class="c3"></span>Radio ∝ capacidad estimada del nodo (0.1 → 3.4 Tbps aprox.)</div>
+    </div>
+  </div>
+
+  <div class="two-col-map">
+    <div class="panel">
+      <div class="section-head">
+        <div class="section-eyebrow">Ranking</div>
+        <div class="section-title">Nodos por capacidad estimada</div>
+      </div>
+      <div class="node-list" id="nodeList"></div>
+    </div>
+    <div class="panel detail-panel" id="detailPanel">
+      <div class="detail-empty">Selecciona un nodo del mapa o de la lista para ver su detalle documentado.</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-head">
+        <div class="section-eyebrow">Efectividad de infraestructura propia</div>
+        <div class="section-title">Capacidad de caché por región</div>
+      </div>
+      <table class="region-table">
+        <thead>
+          <tr><th>Región</th><th class="num">Servido por caché</th><th class="num">Cap. estimada</th><th class="num">Pico de tráfico</th></tr>
+        </thead>
+        <tbody id="regionTableBody"></tbody>
+      </table>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:14px;line-height:1.55;">
+        "Servido por caché" es el porcentaje del tráfico total de la región que la propia
+        infraestructura de Valve logró cubrir sin recurrir a CDNs de terceros (feb.–oct. 2023).
+      </p>
+    </div>
+    <div class="panel">
+      <div class="section-head">
+        <div class="section-eyebrow">Overflow de tráfico</div>
+        <div class="section-title">CDNs de terceros usados como respaldo</div>
+      </div>
+      <div class="partner-grid" id="partnerGrid"></div>
+      <p style="font-size:11.5px;color:var(--text-secondary);margin-top:14px;line-height:1.6;">
+        Valve activa estos proveedores cuando la caché propia de una ciudad se satura o cuando la
+        ciudad está geográficamente aislada de otros nodos Steam (p. ej. Johannesburgo, São Paulo, Sídney).
+      </p>
+    </div>
+  </div>
+
+  <details class="methodology">
+    <summary>
+      <span class="summary-label"><span class="chip"></span>Nota técnica — metodología, límites y fuentes</span>
+      <span class="chevron"></span>
+    </summary>
+    <p><b>Ubicaciones de los nodos:</b> provienen del cruce entre la API pública de Steam
+      (<span class="src">IContentServerDirectoryService</span> / <span class="src">GetCMListForConnect</span>)
+      y las instalaciones registradas por Valve (AS32590) en PeeringDB, tal como lo documenta el
+      estudio académico <i>"Inside the Engine Room: Investigating Steam's Content Delivery Platform
+      Infrastructure in the Era of 100GB Games"</i> (Visser &amp; Fontugne, IIJ Research Lab, 2024).
+      No son coordenadas oficiales publicadas por Valve — Valve no divulga esa información — sino
+      ubicaciones inferidas por investigadores mediante hostnames (p. ej. <span class="src">cache1-sea1.steamcontent.com</span>)
+      y verificadas de forma cruzada con PeeringDB.</p>
+    <p><b>Tamaño de los círculos:</b> el estudio solo publica capacidad de caché <u>agregada por
+      región</u> (Tabla 6 del paper), no por ciudad. Para representar visualmente el mapa, esa
+      capacidad regional se repartió <u>en partes iguales</u> entre las ciudades documentadas de esa
+      región. Esto es una simplificación deliberada: sabemos, por ejemplo, que Fráncfort concentra
+      unos 30 servidores propios y es el nodo de respaldo más usado en Europa, por lo que su tamaño
+      real es mayor al que muestra el reparto uniforme.</p>
+    <p><b>Casos especiales:</b> Seúl solo tiene connection manager confirmado, sin caché de contenido
+      asociada. Dubái aparece en PeeringDB como instalación de Valve pero el estudio no encontró ni
+      caché ni connection manager accesibles vía API — es la única presencia documentada en Medio
+      Oriente. China no aparece con nodos propios pese a ser, según las estadísticas públicas de
+      Steam, el mayor consumidor de tráfico: Steam China opera bajo una API y reglas separadas y no
+      se incluye en las estadísticas públicas de Steam Global.</p>
+    <p><b>Cifras de tráfico:</b> el promedio de 15 Tbps, el pico de 146 Tbps y el pico de 85 Tbps
+      durante el lanzamiento de Counter-Strike 2 corresponden a mediciones propias del estudio entre
+      el 17 de febrero y el 31 de octubre de 2023. Son cifras de una fuente distinta y posterior a
+      otras cifras públicas más conocidas de Valve (p. ej. los 12 Tbps de "capacidad de borde"
+      declarados en 2018), por lo que no deben mezclarse como si fueran la misma serie temporal.</p>
+    <p><b>Fuentes:</b> Visser, C. &amp; Fontugne, R. (2024), <i>Inside the Engine Room</i>, IIJ Research
+      Lab · PeeringDB, registro AS32590 (Valve Corporation) · Steam Web API pública ·
+      store.steampowered.com/stats/content (Steam Download Stats).</p>
+  </details>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+if (typeof L === 'undefined') {
+  document.getElementById('map').innerHTML = '<div style="padding:20px;color:#999;font-family:var(--font-mono);font-size:12px;">Mapa no disponible</div>';
+} else {
+
+  // ---- Regional cache capacity / effectiveness (Table 6, IIJ Lab study, Feb-Oct 2023) ----
+  var REGIONS = [
+    { region: "Asia",           served: 96.09, capGbps: 13556, peakGbps: 32657, cities: 4 },
+    { region: "Europa",         served: 97.75, capGbps: 9470,  peakGbps: 30954, cities: 8 },
+    { region: "Norteamérica",   served: 98.60, capGbps: 7940,  peakGbps: 19025, cities: 6 },
+    { region: "Sudamérica",     served: 59.22, capGbps: 1303,  peakGbps: 10883, cities: 4 },
+    { region: "Oceanía",        served: 99.17, capGbps: 763,   peakGbps: 1064,  cities: 1 },
+    { region: "África",         served: 90.95, capGbps: 106,   peakGbps: 281,   cities: 1 }
+  ];
+
+  var REGION_COLOR = {
+    "Asia": "#6f9dc6", "Europa": "#57a37f", "Norteamérica": "#4fa8b0",
+    "Sudamérica": "#c99a52", "Oceanía": "#8d84c9", "África": "#b17f92", "Medio Oriente": "#7a8699"
+  };
+
+  var STATUS_COLOR = { full:"#6f9dc6", cm_only:"#c99a52", peeringdb_only:"#7a8699" };
+  var STATUS_LABEL = { full:"Caché + Connection Manager", cm_only:"Solo Connection Manager", peeringdb_only:"PeeringDB (sin confirmar vía API)" };
+
+  // ---- Documented nodes: Table 3 (Cache & Connection Manager locations), Visser & Fontugne 2024 ----
+  var NODES = [
+    { name:"Fráncfort",     country:"Alemania",        lat:50.1109, lng:8.6821,   region:"Europa",       status:"full", note:"Nodo europeo más grande: ~30 servidores propios (fra1 + fra2). Respaldo preferido de Ámsterdam, Varsovia, Viena y Estocolmo." },
+    { name:"Ámsterdam",     country:"Países Bajos",    lat:52.3676, lng:4.9041,   region:"Europa",       status:"full", note:"Clúster europeo — comparte tráfico con Fráncfort y París." },
+    { name:"París",         country:"Francia",         lat:48.8566, lng:2.3522,   region:"Europa",       status:"full", note:"Clúster europeo occidental." },
+    { name:"Londres",       country:"Reino Unido",     lat:51.5074, lng:-0.1278,  region:"Europa",       status:"full", note:"Bajo carga alta, ofrece tráfico preferentemente hacia Ashburn (EE. UU.) antes que a París o Ámsterdam." },
+    { name:"Madrid",        country:"España",          lat:40.4168, lng:-3.7038,  region:"Europa",       status:"full", note:"Capacidad limitada; no sirve como respaldo de otras ciudades." },
+    { name:"Varsovia",      country:"Polonia",         lat:52.2297, lng:21.0122,  region:"Europa",       status:"full", note:"Nodo de Europa central." },
+    { name:"Viena",         country:"Austria",         lat:48.2082, lng:16.3738,  region:"Europa",       status:"full", note:"Recibe respaldo de Fráncfort en picos de demanda." },
+    { name:"Estocolmo",     country:"Suecia",          lat:59.3293, lng:18.0686,  region:"Europa",       status:"full", note:"Nodo nórdico (sto1 + sto2)." },
+    { name:"Tokio",         country:"Japón",           lat:35.6762, lng:139.6503, region:"Asia",         status:"full", note:"Único nodo estudiado en detalle por aislamiento geográfico (tyo1 + tyo2). Durante picos, redirige a Hong Kong." },
+    { name:"Hong Kong",     country:"China (RAE)",     lat:22.3193, lng:114.1694, region:"Asia",         status:"full", note:"Nodo de respaldo regional para el este de Asia." },
+    { name:"Singapur",      country:"Singapur",        lat:1.3521,  lng:103.8198, region:"Asia",         status:"full", note:"Nodo del sudeste asiático." },
+    { name:"Seúl",          country:"Corea del Sur",   lat:37.5665, lng:126.9780, region:"Asia",         status:"cm_only", note:"Solo connection manager confirmado — sin caché de contenido asociada según la API pública." },
+    { name:"Chicago",       country:"Estados Unidos",  lat:41.8781, lng:-87.6298, region:"Norteamérica", status:"full", note:"Nodo central de EE. UU." },
+    { name:"Seattle",       country:"Estados Unidos",  lat:47.6062, lng:-122.3321,region:"Norteamérica", status:"full", note:"Costa oeste — no recibe respaldo cruzado de Chicago/Ashburn/Atlanta en carga normal." },
+    { name:"Los Ángeles",   country:"Estados Unidos",  lat:34.0522, lng:-118.2437,region:"Norteamérica", status:"full", note:"Costa oeste de EE. UU." },
+    { name:"Dallas",        country:"Estados Unidos",  lat:32.7767, lng:-96.7970, region:"Norteamérica", status:"full", note:"Nodo del centro-sur de EE. UU." },
+    { name:"Atlanta",       country:"Estados Unidos",  lat:33.7490, lng:-84.3880, region:"Norteamérica", status:"full", note:"Costa este de EE. UU." },
+    { name:"Ashburn",       country:"Estados Unidos",  lat:39.0438, lng:-77.4874, region:"Norteamérica", status:"full", note:"Nodo de respaldo preferido de Londres bajo carga alta." },
+    { name:"São Paulo",     country:"Brasil",          lat:-23.5505,lng:-46.6333, region:"Sudamérica",   status:"full", note:"Geográficamente aislado — recurre con frecuencia a CDN de terceros (Akamai)." },
+    { name:"Buenos Aires",  country:"Argentina",       lat:-34.6037,lng:-58.3816, region:"Sudamérica",   status:"full", note:"Nodo del cono sur." },
+    { name:"Santiago",      country:"Chile",           lat:-33.4489,lng:-70.6693, region:"Sudamérica",   status:"full", note:"Nodo del pacífico sudamericano." },
+    { name:"Lima",          country:"Perú",            lat:-12.0464,lng:-77.0428, region:"Sudamérica",   status:"full", note:"Sudamérica es la región con menor efectividad de caché documentada: solo 34% del tráfico se sirve sin recurrir a CDN externa." },
+    { name:"Sídney",        country:"Australia",       lat:-33.8688,lng:151.2093, region:"Oceanía",      status:"full", note:"Único nodo de Oceanía — región con la mayor efectividad de caché (99%)." },
+    { name:"Johannesburgo", country:"Sudáfrica",       lat:-26.2041,lng:28.0473,  region:"África",       status:"full", note:"Único nodo de caché confirmado en toda África; sin otros nodos cercanos para repartir carga." },
+    { name:"Dubái",         country:"Emiratos Árabes", lat:25.2048, lng:55.2708,  region:"Medio Oriente",status:"peeringdb_only", note:"Presencia registrada en PeeringDB; el estudio no encontró caché ni connection manager accesibles vía API pública. Única presencia documentada en Medio Oriente." }
+  ];
+
+  // Distribute each region's estimated cache capacity evenly across its documented cities
+  var capByRegion = {};
+  REGIONS.forEach(function(r){ capByRegion[r.region] = r.capGbps / r.cities; });
+  NODES.forEach(function(n){ n.capGbps = n.region === "Medio Oriente" ? null : capByRegion[n.region]; });
+
+  function fmtTbps(gbps){ return gbps ? (gbps/1000).toFixed(2).replace(/\.00$/,'') + ' Tbps' : 'sin datos'; }
+
+  // ---- Map ----
+  var map = L.map('map', { worldCopyJump:true, minZoom:2 }).setView([20, 10], 2);
+
+  var darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd', maxZoom: 19
+  }).addTo(map);
+
+  var tileErrorCount = 0, fallbackActive = false;
+  darkTiles.on('tileerror', function () {
+    tileErrorCount++;
+    if (tileErrorCount > 4 && !fallbackActive) {
+      fallbackActive = true;
+      map.removeLayer(darkTiles);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors', subdomains: 'abc', maxZoom: 19
+      }).addTo(map);
+      document.getElementById('map').style.filter = 'invert(1) hue-rotate(180deg) brightness(.92) contrast(.9) saturate(.6)';
+    }
+  });
+
+  var markersByName = {};
+
+  function renderDetail(n) {
+    var color = STATUS_COLOR[n.status];
+    document.getElementById('detailPanel').innerHTML =
+      '<div class="detail-head">' +
+        '<div><div class="detail-name">' + n.name + '</div>' +
+        '<div class="detail-loc">' + n.country + ' · ' + n.region + '</div></div>' +
+        '<span class="detail-badge" style="color:' + color + ';border-color:' + color + '55;background:' + color + '14;">' + STATUS_LABEL[n.status] + '</span>' +
+      '</div>' +
+      '<div class="detail-stat-row">' +
+        '<div class="detail-stat"><div class="ds-label">Capacidad estimada</div><div class="ds-value">' + fmtTbps(n.capGbps) + '</div></div>' +
+        '<div class="detail-stat"><div class="ds-label">Región</div><div class="ds-value" style="font-size:14px;color:' + REGION_COLOR[n.region] + ';">' + n.region + '</div></div>' +
+      '</div>' +
+      '<div class="detail-note">' + n.note + '</div>';
+  }
+
+  function selectNode(name, opts) {
+    var n = NODES.filter(function(x){ return x.name === name; })[0];
+    if (!n) return;
+    renderDetail(n);
+    document.querySelectorAll('.node-row').forEach(function(r){ r.classList.toggle('active', r.dataset.name === name); });
+    if (!opts || opts.fly !== false) { map.flyTo([n.lat, n.lng], Math.max(map.getZoom(), 4), { duration: 0.6 }); }
+    if (markersByName[name]) markersByName[name].openPopup();
+  }
+
+  NODES.forEach(function(n){
+    var radius = n.capGbps ? Math.max(6, Math.min(24, Math.sqrt(n.capGbps) * 1.85)) : 7;
+    var color = STATUS_COLOR[n.status];
+
+    var marker = L.circleMarker([n.lat, n.lng], {
+      radius: radius, color: color, weight: 1.5, fillColor: color, fillOpacity: 0.38, opacity: 0.95
+    }).addTo(map);
+
+    marker.bindTooltip(n.name, { permanent: true, direction: 'right', offset: [radius + 3, 0], className: 'city-label' });
+
+    marker.bindPopup(
+      '<p class="popup-title">' + n.name + '</p>' +
+      '<p class="popup-sub">' + n.country + ' · ' + n.region + '</p>' +
+      '<div class="popup-row"><span>Estado del nodo</span><b>' + STATUS_LABEL[n.status] + '</b></div>' +
+      '<div class="popup-row"><span>Capacidad estimada</span><b>' + fmtTbps(n.capGbps) + '</b></div>' +
+      '<p class="popup-note">' + n.note + '</p>'
+    );
+
+    marker.on('click', function(){ selectNode(n.name, { fly:false }); });
+    markersByName[n.name] = marker;
+  });
+
+  // ---- Ranked node list ----
+  var listEl = document.getElementById('nodeList');
+  NODES.slice().sort(function(a,b){ return (b.capGbps||0) - (a.capGbps||0); }).forEach(function(n){
+    var maxCap = Math.max.apply(null, NODES.map(function(x){ return x.capGbps||0; }));
+    var pct = n.capGbps ? Math.max(4, (n.capGbps/maxCap)*100) : 4;
+    var color = STATUS_COLOR[n.status];
+    var row = document.createElement('div');
+    row.className = 'node-row';
+    row.dataset.name = n.name;
+    row.innerHTML =
+      '<span class="n-dot" style="background:' + color + ';"></span>' +
+      '<div><div class="n-name">' + n.name + '</div><div class="n-country">' + n.country + '</div>' +
+        '<div class="n-bar-track"><div class="n-bar-fill" style="width:' + pct + '%;background:' + color + ';"></div></div></div>' +
+      '<div class="n-cap">' + fmtTbps(n.capGbps) + '</div>';
+    row.addEventListener('click', function(){ selectNode(n.name); });
+    listEl.appendChild(row);
+  });
+
+  // ---- Region table ----
+  var tbody = document.getElementById('regionTableBody');
+  REGIONS.slice().sort(function(a,b){ return b.capGbps - a.capGbps; }).forEach(function(r){
+    var color = REGION_COLOR[r.region];
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><div class="region-name"><span class="region-dot" style="background:' + color + ';"></span>' + r.region + '</div></td>' +
+      '<td class="num"><div class="served-cell"><span>' + r.served.toFixed(1) + '%</span>' +
+        '<div class="served-track"><div class="served-fill" style="width:' + r.served + '%;background:' + color + ';"></div></div></div></td>' +
+      '<td class="num">' + fmtTbps(r.capGbps) + '</td>' +
+      '<td class="num">' + fmtTbps(r.peakGbps) + '</td>';
+    tbody.appendChild(tr);
+  });
+
+  // ---- CDN partner chips (Fig. 8, IIJ Lab study) ----
+  var PARTNERS = ["Steam Cache (propia)", "Akamai", "Google Cloud CDN", "Level3 / Lumen", "Alibaba Cloud CDN", "Highwinds"];
+  var grid = document.getElementById('partnerGrid');
+  PARTNERS.forEach(function(p){
+    var div = document.createElement('div');
+    div.className = 'partner-chip';
+    div.textContent = p;
+    grid.appendChild(div);
+  });
+
+} // fin del bloque "if (typeof L !== 'undefined')"
+</script>
+</body>
+</html>

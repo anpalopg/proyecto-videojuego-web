@@ -14,32 +14,44 @@
       </div>
       <div class="story-features">
         <div class="feature-item">
-          <div class="feature-icon">🧠</div>
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.5 2 6 4.5 6 7c0 1.8.9 3.4 2.3 4.4L8 13h8l-.3-1.6C17.1 10.4 18 8.8 18 7c0-2.5-2.5-5-6-5z"/><path d="M9 13v2a3 3 0 006 0v-2"/></svg>
+          </div>
           <div class="feature-title">Decisiones Morales</div>
           <p class="feature-desc">Cada elección tiene consecuencias permanentes. No hay opciones correctas.</p>
         </div>
         <div class="feature-item">
-          <div class="feature-icon">🔮</div>
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </div>
           <div class="feature-title">Realidad Fracturada</div>
           <p class="feature-desc">Los ambientes cambian según tu estado mental. Nada es lo que parece.</p>
         </div>
         <div class="feature-item">
-          <div class="feature-icon">🎭</div>
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 20h20M6 20V10l6-7 6 7v10"/><path d="M9 20v-5h6v5"/></svg>
+          </div>
           <div class="feature-title">Múltiples Finales</div>
           <p class="feature-desc">Más de 24 finales únicos determinados por tus acciones a lo largo del juego.</p>
         </div>
         <div class="feature-item">
-          <div class="feature-icon">⚡</div>
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
           <div class="feature-title">Tensión Constante</div>
           <p class="feature-desc">Sistema de estrés dinámico que afecta la jugabilidad y las percepciones.</p>
         </div>
         <div class="feature-item">
-          <div class="feature-icon">🗺️</div>
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h18M3 6h18M3 18h18"/><circle cx="12" cy="12" r="9"/></svg>
+          </div>
           <div class="feature-title">Mundo Abierto</div>
           <p class="feature-desc">Explora libremente el instituto y descubre secretos en cada rincón oscuro.</p>
         </div>
         <div class="feature-item">
-          <div class="feature-icon">🌐</div>
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 3a15 15 0 010 18M3 12h18"/><path d="M5.6 6a15 15 0 0112.8 0M5.6 18a15 15 0 0112.8 0"/></svg>
+          </div>
           <div class="feature-title">Co-op Online</div>
           <p class="feature-desc">Juega con un amigo. Sus decisiones también afectarán tu realidad.</p>
         </div>
@@ -141,8 +153,16 @@
   }
 
   .feature-icon {
-    font-size: 28px;
+    width: 32px;
+    height: 32px;
     margin-bottom: 10px;
+    color: var(--red);
+    opacity: 0.85;
+  }
+
+  .feature-icon svg {
+    width: 100%;
+    height: 100%;
   }
 
   .feature-title {

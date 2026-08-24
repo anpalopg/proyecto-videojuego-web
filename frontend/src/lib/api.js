@@ -1,5 +1,6 @@
 function getApiBaseUrl() {
-  return import.meta.env.PUBLIC_API_BASE_URL || '/api/v1';
+  // In development point at Python backend; in production set PUBLIC_API_BASE_URL
+  return import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
 }
 
 function getAuthApiUrl() {

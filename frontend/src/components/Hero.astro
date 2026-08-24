@@ -16,12 +16,12 @@ import logoSrc from '../assets/images/Logo.png';
     <p class="hero-tagline">¿Puedes confiar en tu propia mente?</p>
     <p class="hero-desc">Un thriller psicológico de supervivencia donde cada decisión moldea la realidad. Los límites entre lo real y lo imaginado se difuminan en los pasillos del olvido.</p>
     <div class="hero-ctas">
-      <a href="#personajes" class="btn-play">▶ JUGAR AHORA</a>
-      <button class="btn btn-outline" data-auth="register">CREAR CUENTA</button>
+      <a href={import.meta.env.PUBLIC_STORE_URL || 'http://localhost:5173'} target="_blank" rel="noopener" class="btn-play">▶ JUGAR AHORA</a>
+      <a href={import.meta.env.PUBLIC_STORE_URL || 'http://localhost:5173'} target="_blank" rel="noopener" class="btn btn-outline store-btn-hero">VER EN TIENDA</a>
     </div>
     <div class="hero-badges">
       <span class="badge badge-green"><span class="badge-dot"></span> Servidores Online</span>
-      <span class="badge badge-blue">🎮 2,847 Jugadores activos</span>
+      <span class="badge badge-blue">2,847 Jugadores activos</span>
     </div>
   </div>
 </section>
@@ -134,6 +134,18 @@ import logoSrc from '../assets/images/Logo.png';
     letter-spacing: 2px;
     text-transform: uppercase;
     font-family: var(--font-display);
+  }
+
+  .store-btn-hero {
+    border-color: rgba(139,92,246,0.5);
+    color: #a78bfa;
+  }
+
+  .store-btn-hero:hover {
+    border-color: #8b5cf6;
+    background: rgba(109,40,217,0.12);
+    box-shadow: 0 0 20px rgba(109,40,217,0.25);
+    color: #c4b5fd;
   }
 
   .particles {

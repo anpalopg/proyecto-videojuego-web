@@ -191,7 +191,9 @@ export default function ModalAuth({ isOpen, onClose, onLogin, initialTab = 'logi
   return (
     <div style={styles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div style={styles.modal}>
-        <button style={styles.closeBtn} onClick={onClose}>✕</button>
+        <button style={styles.closeBtn} onClick={onClose} aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
         <img src={logoSrc} alt="Recessed Minds" style={styles.logo} />
         
         <div style={styles.tabs}>
@@ -206,12 +208,12 @@ export default function ModalAuth({ isOpen, onClose, onLogin, initialTab = 'logi
         {activeTab === 'login' && (
           <form style={styles.form} onSubmit={handleLogin}>
             <div style={styles.formGroup}>
-              <label htmlFor="loginEmail" style={styles.label}>Correo Electrónico</label>
+              <label htmlFor="loginEmail" style={styles.label}>Usuario o Correo</label>
               <input
                 id="loginEmail"
-                type="email"
+                type="text"
                 style={styles.input}
-                placeholder="tu@correo.com"
+                placeholder="usuario o tu@correo.com"
                 value={loginData.email}
                 onInput={(e) => setLoginData({ ...loginData, email: e.target.value })}
                 required

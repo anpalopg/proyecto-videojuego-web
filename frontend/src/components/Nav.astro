@@ -14,7 +14,7 @@ import logoSrc from '../assets/images/Logo.png';
     <li><a href="#personajes">Personajes</a></li>
     <li><a href="#historia">Historia</a></li>
     <li><a href="#comunidad">Comunidad</a></li>
-    <li><a href="#personajes" class="play-link">▶ Jugar</a></li>
+    <li><a href={import.meta.env.PUBLIC_STORE_URL || 'http://localhost:5173'} target="_blank" rel="noopener" class="play-link">▶ Jugar</a></li>
   </ul>
   <div class="nav-actions">
     <slot name="actions" />
@@ -37,7 +37,7 @@ import logoSrc from '../assets/images/Logo.png';
     <button class="btn btn-red" data-auth="register">Registrarse</button>
     <button class="btn btn-outline" data-auth="login">Iniciar Sesión</button>
   </div>
-  <a href="#personajes" class="nav-overlay-play btn-play">▶ JUGAR AHORA</a>
+  <a href={import.meta.env.PUBLIC_STORE_URL || 'http://localhost:5173'} target="_blank" rel="noopener" class="nav-overlay-play btn-play">▶ JUGAR AHORA</a>
 </div>
 
 <script>

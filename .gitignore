@@ -1,12 +1,18 @@
 # Dependencies
 node_modules/
 frontend/node_modules/
+store-frontend/node_modules/
 
-# Environment files
+# Environment files — secretos locales (nunca al repo)
 .env
-.env.*
+.env.local
 frontend/.env
-frontend/.env.*
+frontend/.env.local
+store-frontend/.env
+store-frontend/.env.local
+backend/.env
+
+# .env.production SÍ va al repo (solo URLs públicas, sin secretos)
 
 # Vercel build output
 .vercel/
@@ -15,12 +21,19 @@ frontend/.env.*
 dist/
 build/
 frontend/dist/
+store-frontend/dist/
+
+# Python
+backend/venv/
+backend/__pycache__/
+backend/app/__pycache__/
+backend/app/routers/__pycache__/
+backend/*.db
+**/*.pyc
 
 # Logs
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # OS/editor
 .DS_Store

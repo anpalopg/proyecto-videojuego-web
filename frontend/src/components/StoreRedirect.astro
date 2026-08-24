@@ -1,0 +1,183 @@
+---
+// StoreRedirect.astro — Sección que redirige al React store (Steam-like)
+const STORE_URL = import.meta.env.PUBLIC_STORE_URL || 'http://localhost:5173';
+---
+
+<section class="store-cta" id="tienda">
+  <div class="container">
+    <div class="store-cta-inner">
+      <div class="store-cta-badge">Disponible ahora</div>
+      <h2 class="store-cta-title">Juega en nuestra Tienda</h2>
+      <p class="store-cta-desc">
+        Consigue <strong>Recessed Minds</strong> en nuestra plataforma oficial.
+        Explora precios, ofertas y packs exclusivos — directo en tu biblioteca.
+      </p>
+      <div class="store-cta-actions">
+        <a href={STORE_URL} target="_blank" rel="noopener" class="store-btn store-btn-primary">
+          <span class="store-btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          </span>
+          Ver en Tienda
+        </a>
+        <a href={`${STORE_URL}/game/1`} target="_blank" rel="noopener" class="store-btn store-btn-outline">
+          Ver detalles del juego
+        </a>
+      </div>
+      <p class="store-cta-note">También disponible: packs con DLC y edición VR</p>
+    </div>
+    <!-- Decorative glow blobs -->
+    <div class="store-blob store-blob-1" aria-hidden="true"></div>
+    <div class="store-blob store-blob-2" aria-hidden="true"></div>
+  </div>
+</section>
+
+<style>
+  .store-cta {
+    position: relative;
+    padding: 80px 0;
+    overflow: hidden;
+  }
+
+  @media (min-width: 768px) { .store-cta { padding: 100px 0; } }
+
+  .store-cta-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, rgba(46,16,101,0.25) 0%, rgba(27,40,56,0.2) 100%);
+    border: 1px solid rgba(139,92,246,0.25);
+    border-radius: 8px;
+    padding: 56px 32px;
+    max-width: 720px;
+    margin: 0 auto;
+    box-shadow: 0 0 60px rgba(109,40,217,0.12), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  @media (min-width: 768px) {
+    .store-cta-inner { padding: 72px 64px; }
+  }
+
+  .store-cta-badge {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #a78bfa;
+    background: rgba(109,40,217,0.18);
+    border: 1px solid rgba(139,92,246,0.3);
+    padding: 6px 18px;
+    border-radius: 2px;
+  }
+
+  .store-cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--beige);
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  .store-cta-desc {
+    font-size: clamp(14px, 2.5vw, 17px);
+    color: var(--beige-dim);
+    line-height: 1.75;
+    max-width: 480px;
+    margin: 0;
+  }
+
+  .store-cta-desc strong {
+    color: var(--beige);
+    font-weight: 600;
+  }
+
+  .store-cta-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .store-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: all 0.25s;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .store-btn-primary {
+    background: linear-gradient(90deg, #6d28d9, #8b5cf6);
+    color: #fff;
+    border: 1px solid rgba(139,92,246,0.5);
+    box-shadow: 0 4px 20px rgba(109,40,217,0.4);
+  }
+
+  .store-btn-primary:hover {
+    background: linear-gradient(90deg, #7c3aed, #a78bfa);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(109,40,217,0.55);
+    color: #fff;
+  }
+
+  .store-btn-outline {
+    background: transparent;
+    color: var(--beige-dim);
+    border: 1px solid rgba(220,214,196,0.2);
+  }
+
+  .store-btn-outline:hover {
+    border-color: rgba(139,92,246,0.5);
+    color: #a78bfa;
+    background: rgba(109,40,217,0.08);
+  }
+
+  .store-btn-icon {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .store-cta-note {
+    font-size: 12px;
+    color: var(--beige-dim);
+    opacity: 0.5;
+    margin: 0;
+  }
+
+  /* ── Background blobs ── */
+  .store-blob {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .store-blob-1 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(109,40,217,0.12) 0%, transparent 70%);
+    top: -100px;
+    left: -100px;
+  }
+
+  .store-blob-2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(102,18,20,0.1) 0%, transparent 70%);
+    bottom: -80px;
+    right: -80px;
+  }
+</style>

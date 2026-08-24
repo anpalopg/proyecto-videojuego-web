@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: recessed-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///./recessed_minds.db
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+      - key: CORS_ORIGINS
+        value: "https://recessed-landing.vercel.app,https://recessed-store.vercel.app"
+    disk:
+      name: sqlite-data
+      mountPath: /opt/render/project/src/backend
+      sizeGB: 1
