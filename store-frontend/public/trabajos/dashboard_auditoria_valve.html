@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valve Corporation — Dashboard Ejecutivo de Auditoría Integral</title>
+<style>
+  :root{
+    --bg:#f3f5f9; --card:#ffffff; --ink:#14213d; --muted:#5b6578; --line:#e3e7ee;
+    --navy:#14213d; --blue:#2f6fed; --green:#1f9d6b; --amber:#e8a317; --red:#d64545; --violet:#6b4fd8;
+    --green-bg:#e6f6ef; --amber-bg:#fdf3dc; --red-bg:#fbe8e8; --blue-bg:#e8f0fe;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+  .wrap{max-width:1240px;margin:0 auto;padding:24px}
+  header{background:var(--navy);color:#fff;border-radius:12px;padding:26px 30px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+  header h1{font-size:24px;font-weight:700;letter-spacing:.2px}
+  header p{color:#b8c3dc;margin-top:4px;font-size:13px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{border:1px solid #3b4a72;color:#dbe3f5;padding:4px 10px;border-radius:999px;font-size:12px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:30px 0 12px}
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(6,1fr)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .kpi .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .kpi .value{font-size:32px;font-weight:700;margin:6px 0 2px;line-height:1.1}
+  .kpi .sub{font-size:12px;color:var(--muted)}
+  .kpi.good{border-top:4px solid var(--green)} .kpi.warn{border-top:4px solid var(--amber)}
+  .kpi.bad{border-top:4px solid var(--red)} .kpi.info{border-top:4px solid var(--blue)}
+  .two{grid-template-columns:1.6fr 1fr}
+  .three{grid-template-columns:repeat(3,1fr)}
+  .card h3{font-size:15px;margin-bottom:4px}
+  .card .desc{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+
+  /* Risk bars */
+  .legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .rrow{display:grid;grid-template-columns:210px 1fr 62px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .rrow:last-child{border-bottom:none}
+  .rname{font-size:12.5px;line-height:1.3}
+  .rname small{display:block;color:var(--muted);font-size:11px}
+  .bars{display:flex;flex-direction:column;gap:3px}
+  .bar{height:9px;border-radius:3px}
+  .bar.inh{background:#c9d3e8} .bar.res{background:var(--blue)} .bar.res.hi{background:var(--red)}
+  .rval{font-size:12px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .rval b{color:var(--ink)}
+
+  /* Stepper */
+  .steps{display:flex;flex-direction:column;gap:0}
+  .step{display:flex;gap:12px;padding:9px 0;position:relative}
+  .dot{flex:0 0 22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;z-index:1}
+  .step:not(:last-child)::after{content:"";position:absolute;left:10px;top:30px;bottom:-8px;width:2px;background:var(--line)}
+  .d-ok{background:var(--green)} .d-ready{background:var(--blue)} .d-run{background:var(--amber)} .d-pend{background:#aab3c5}
+  .step b{font-size:13px;display:block}
+  .step span{font-size:12px;color:var(--muted)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap}
+  .p-ok{background:var(--green-bg);color:#14744d} .p-warn{background:var(--amber-bg);color:#8a5d00}
+  .p-bad{background:var(--red-bg);color:#a02525} .p-info{background:var(--blue-bg);color:#1f4fb8} .p-grey{background:#eceff4;color:#4b5568}
+
+  /* Progress */
+  .prog{margin:10px 0}
+  .prog .top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px}
+  .track{height:10px;background:#e9edf4;border-radius:5px;overflow:hidden}
+  .fill{height:100%;border-radius:5px}
+
+  /* SST */
+  .sst{display:grid;grid-template-columns:1fr;gap:12px}
+  .sst-item .top{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;margin-bottom:5px}
+  .sst-item .formula{font-size:11px;color:var(--muted);margin-top:4px}
+
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{background:#f0f3f9;text-align:left;padding:8px 10px;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+  td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+
+  /* Findings */
+  .find{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .find:last-child{border-bottom:none;padding-bottom:0}
+  .find:first-of-type{padding-top:0}
+  .find .sev{flex:0 0 78px}
+  .find b{display:block;font-size:13px}
+  .find p{font-size:12.5px;color:var(--muted)}
+
+  /* Heat matrix */
+  .matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+  .matrix div{border-radius:8px;padding:10px 4px}
+  .matrix .h{font-size:11px;color:var(--muted);padding:2px}
+  .matrix .n{font-size:20px;font-weight:700}
+  .matrix .l{font-size:11px}
+
+  footer{margin:30px 0 8px;text-align:center;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+  @media(max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.two,.three{grid-template-columns:1fr}.rrow{grid-template-columns:1fr}}
+  @media print{body{background:#fff}.wrap{padding:0}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>Valve Corporation — Auditoría Integral</h1>
+    <p>Dashboard ejecutivo del Sistema de Gestión Integrado · Fuente: fase_auditoria_integral_valve.xlsx</p>
+  </div>
+  <div class="tags">
+    <span class="tag">SST · GTC 45</span><span class="tag">Calidad · ISO 9001</span>
+    <span class="tag">Seguridad · ISO 27001</span><span class="tag">Ambiental · ISO 14001</span>
+  </div>
+</header>
+
+<!-- KPIs -->
+<h2>Indicadores clave</h2>
+<div class="grid kpis">
+  <div class="card kpi good"><div class="label">Evidencias verificadas</div><div class="value">8/8</div><div class="sub">100% de requisitos con evidencia</div></div>
+  <div class="card kpi good"><div class="label">Cumplimiento ambiental</div><div class="value">5/5</div><div class="sub">Aspectos ISO 14001 conformes</div></div>
+  <div class="card kpi info"><div class="label">Reducción de riesgo</div><div class="value">71%</div><div class="sub">Inherente 130 → residual 37 (10 riesgos)</div></div>
+  <div class="card kpi warn"><div class="label">Riesgos residuales máx.</div><div class="value">3</div><div class="sub">Con residual = 6 (el más alto)</div></div>
+  <div class="card kpi bad"><div class="label">Peligro SST crítico</div><div class="value">1</div><div class="sub">NR 720 · Alto (no aceptable)</div></div>
+  <div class="card kpi warn"><div class="label">Avance del plan</div><div class="value">2/5</div><div class="sub">Fases completadas o listas</div></div>
+</div>
+
+<!-- Risk + Plan -->
+<h2>Gestión de riesgos y avance del proceso</h2>
+<div class="grid two">
+  <div class="card">
+    <h3>Riesgo inherente vs. residual (ISO 9001 e ISO 27001)</h3>
+    <div class="desc">Efecto de los controles sobre cada riesgo. Escala de barras: 0–25.</div>
+    <div class="legend">
+      <span><i style="background:#c9d3e8"></i>Inherente</span>
+      <span><i style="background:var(--blue)"></i>Residual</span>
+      <span><i style="background:var(--red)"></i>Residual = 6 (prioridad)</span>
+    </div>
+
+    <div class="rrow"><div class="rname">Loot boxes — riesgo regulatorio<small>ISO 9001</small></div><div class="bars"><div class="bar inh" style="width:80%"></div><div class="bar res hi" style="width:24%"></div></div><div class="rval"><b>20</b> → <b>6</b></div></div>
+    <div class="rrow"><div class="rname">Explotación APIs y mercado de skins<small>ISO 27001</small></div><div class="bars"><div class="bar inh" style="width:80%"></div><div class="bar res hi" style="width:24%"></div></div><div class="rval"><b>20</b> → <b>6</b></div></div>
+    <div class="rrow"><div class="rname">Compromiso de cuentas y pagos<small>ISO 27001</small></div><div class="bars"><div class="bar inh" style="width:80%"></div><div class="bar res" style="width:16%"></div></div><div class="rval"><b>20</b> → <b>4</b></div></div>
+    <div class="rrow"><div class="rname">Retraso / inviabilidad de hardware<small>ISO 9001</small></div><div class="bars"><div class="bar inh" style="width:48%"></div><div class="bar res hi" style="width:24%"></div></div><div class="rval"><b>12</b> → <b>6</b></div></div>
+    <div class="rrow"><div class="rname">Lanzamiento de juego defectuoso<small>ISO 9001</small></div><div class="bars"><div class="bar inh" style="width:48%"></div><div class="bar res" style="width:12%"></div></div><div class="rval"><b>12</b> → <b>3</b></div></div>
+    <div class="rrow"><div class="rname">Exposición de PII en logística (CEVA)<small>ISO 27001</small></div><div class="bars"><div class="bar inh" style="width:48%"></div><div class="bar res" style="width:12%"></div></div><div class="rval"><b>12</b> → <b>3</b></div></div>
+    <div class="rrow"><div class="rname">Filtración de código fuente e IP<small>ISO 27001</small></div><div class="bars"><div class="bar inh" style="width:48%"></div><div class="bar res" style="width:12%"></div></div><div class="rval"><b>12</b> → <b>3</b></div></div>
+    <div class="rrow"><div class="rname">Incompatibilidad de juegos en Steam Deck<small>ISO 9001</small></div><div class="bars"><div class="bar inh" style="width:32%"></div><div class="bar res" style="width:8%"></div></div><div class="rval"><b>8</b> → <b>2</b></div></div>
+    <div class="rrow"><div class="rname">Ataques DDoS en Steam Cloud<small>ISO 27001</small></div><div class="bars"><div class="bar inh" style="width:32%"></div><div class="bar res" style="width:8%"></div></div><div class="rval"><b>8</b> → <b>2</b></div></div>
+    <div class="rrow"><div class="rname">Saturación de soporte y atención<small>ISO 9001</small></div><div class="bars"><div class="bar inh" style="width:24%"></div><div class="bar res" style="width:8%"></div></div><div class="rval"><b>6</b> → <b>2</b></div></div>
+  </div>
+
+  <div class="card">
+    <h3>Fases del proceso de auditoría</h3>
+    <div class="desc">Estado de preparación por fase.</div>
+    <div class="steps">
+      <div class="step"><div class="dot d-ok">1</div><div><b>Preparación interna <span class="pill p-ok">COMPLETADO</span></b><span>Dossier digital · 2 semanas</span></div></div>
+      <div class="step"><div class="dot d-ready">2</div><div><b>Reunión de apertura <span class="pill p-info">LISTO</span></b><span>Presentación ejecutiva · 2 horas</span></div></div>
+      <div class="step"><div class="dot d-run">3</div><div><b>Ejecución y muestreo <span class="pill p-warn">EN PROCESO</span></b><span>Evidencia en vivo y logs · 3 días</span></div></div>
+      <div class="step"><div class="dot d-pend">4</div><div><b>Evaluación de hallazgos <span class="pill p-grey">PENDIENTE</span></b><span>Minuta de hallazgos previa · 1 h diaria</span></div></div>
+      <div class="step"><div class="dot d-pend">5</div><div><b>Reunión de cierre <span class="pill p-grey">PENDIENTE</span></b><span>Acta de cierre y compromisos CAPA · 2 horas</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Systems -->
+<h2>Resultados por sistema de gestión</h2>
+<div class="grid three">
+  <div class="card">
+    <h3>SST — GTC 45</h3>
+    <div class="desc">Nivel de riesgo (NR) por peligro identificado.</div>
+    <div class="sst">
+      <div class="sst-item">
+        <div class="top"><span>Laboratorio de hardware · Eléctrico</span><span class="pill p-bad">ALTO</span></div>
+        <div class="track"><div class="fill" style="width:100%;background:var(--red)"></div></div>
+        <div class="formula">NR 720 = 6×2×60 · Medida: verificar en campo</div>
+      </div>
+      <div class="sst-item">
+        <div class="top"><span>Operación Steam 24/7 · Psicosocial</span><span class="pill p-warn">MEDIO</span></div>
+        <div class="track"><div class="fill" style="width:41.7%;background:var(--amber)"></div></div>
+        <div class="formula">NR 300 = 12×25 · Medidas cumplidas</div>
+      </div>
+      <div class="sst-item">
+        <div class="top"><span>Desarrollo de videojuegos · Biomecánico</span><span class="pill p-warn">MEDIO</span></div>
+        <div class="track"><div class="fill" style="width:20.8%;background:var(--amber)"></div></div>
+        <div class="formula">NR 150 = 6×25 · Medidas cumplidas</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Calidad y Seguridad de la información</h3>
+    <div class="desc">Reducción de riesgo tras aplicar controles (suma de puntajes).</div>
+    <div class="prog"><div class="top"><span>ISO 9001 · 58 → 19</span><b>67%</b></div><div class="track"><div class="fill" style="width:67%;background:var(--blue)"></div></div></div>
+    <div class="prog"><div class="top"><span>ISO 27001 · 72 → 18</span><b>75%</b></div><div class="track"><div class="fill" style="width:75%;background:var(--violet)"></div></div></div>
+    <div style="margin-top:16px" class="desc">Distribución de riesgo residual (10 riesgos)</div>
+    <div class="matrix">
+      <div class="h">Residual 2</div><div class="h">Residual 3</div><div class="h">Residual 4</div><div class="h">Residual 6</div>
+      <div style="background:var(--green-bg)"><div class="n">3</div><div class="l">riesgos</div></div>
+      <div style="background:var(--green-bg)"><div class="n">3</div><div class="l">riesgos</div></div>
+      <div style="background:var(--amber-bg)"><div class="n">1</div><div class="l">riesgo</div></div>
+      <div style="background:var(--red-bg)"><div class="n">3</div><div class="l">riesgos</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Ambiental — ISO 14001</h3>
+    <div class="desc">5 de 5 aspectos ambientales en estado CONFORME.</div>
+    <div class="prog"><div class="top"><span>Energía renovable en nube</span><b>85%</b></div><div class="track"><div class="fill" style="width:85%;background:var(--green)"></div></div></div>
+    <div class="prog"><div class="top"><span>Embalaje reciclable</span><b>100%</b></div><div class="track"><div class="fill" style="width:100%;background:var(--green)"></div></div></div>
+    <div class="prog"><div class="top"><span>Detergentes biodegradables</span><b>100%</b></div><div class="track"><div class="fill" style="width:100%;background:var(--green)"></div></div></div>
+    <div class="prog"><div class="top"><span>Reducción de descarte de cableado</span><b>30%</b></div><div class="track"><div class="fill" style="width:30%;background:var(--green)"></div></div></div>
+    <div class="prog"><div class="top"><span>Reparabilidad Steam Deck (iFixit)</span><b>&gt; 9/10</b></div><div class="track"><div class="fill" style="width:90%;background:var(--green)"></div></div></div>
+  </div>
+</div>
+
+<!-- Findings -->
+<h2>Hallazgos y puntos de atención</h2>
+<div class="card">
+  <div class="find"><div class="sev"><span class="pill p-bad">CRÍTICO</span></div><div><b>Riesgo eléctrico en laboratorio de hardware (NR 720)</b><p>Único peligro SST clasificado como "Alto (no aceptable)". Su intervención está marcada como "Verificar en campo". Preparar registros LOTO, protección diferencial y capacitaciones para la inspección.</p></div></div>
+  <div class="find"><div class="sev"><span class="pill p-warn">ATENCIÓN</span></div><div><b>Inconsistencia a resolver antes de la fase 3</b><p>EVID-SST-01 (inspección del laboratorio y LOTO) figura como VERIFICADO, mientras la matriz SST mantiene el control eléctrico en "Verificar en campo". Alinear ambos estados para evitar observaciones.</p></div></div>
+  <div class="find"><div class="sev"><span class="pill p-warn">ATENCIÓN</span></div><div><b>Tres riesgos con residual 6</b><p>Loot boxes, explotación de APIs / mercado de skins y retraso de hardware. Los dos primeros comparten el factor regulatorio; tener a mano el plan de tratamiento y el Risk Heatmap Q3 2024.</p></div></div>
+  <div class="find"><div class="sev"><span class="pill p-info">MEJORA</span></div><div><b>Transición a energía renovable al 85%</b><p>Conforme en la auditoría, con meta del 100%. Presentarlo como compromiso de mejora continua con hoja de ruta definida.</p></div></div>
+  <div class="find"><div class="sev"><span class="pill p-ok">FORTALEZA</span></div><div><b>Trazabilidad completa de evidencias</b><p>8 de 8 requisitos verificados: LOTO, ergonomía, playtesting, soporte, purga PII a 30 días, Steam Guard / RBAC y energía renovable y reparabilidad.</p></div></div>
+</div>
+
+<!-- Evidence -->
+<h2>Estado de evidencias</h2>
+<div class="card" style="padding:6px 8px">
+  <table>
+    <thead><tr><th>ID</th><th>Norma</th><th>Evidencia requerida</th><th>Responsable</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>EVID-SST-01</td><td>GTC 45</td><td>Inspección de laboratorios y protocolo LOTO</td><td>Ingeniería de Hardware</td><td><span class="pill p-ok">VERIFICADO</span></td></tr>
+      <tr><td>EVID-SST-02</td><td>GTC 45</td><td>Evaluación ergonómica y escritorios ajustables</td><td>SGI / RR. HH.</td><td><span class="pill p-ok">VERIFICADO</span></td></tr>
+      <tr><td>EVID-CAL-01</td><td>ISO 9001</td><td>Playtesting temprano y satisfacción de lanzamientos</td><td>Felipe / Andrea</td><td><span class="pill p-ok">VERIFICADO</span></td></tr>
+      <tr><td>EVID-CAL-02</td><td>ISO 9001</td><td>Tiempos de respuesta de soporte e historial de reembolsos</td><td>Samuel / Andrea</td><td><span class="pill p-ok">VERIFICADO</span></td></tr>
+      <tr><td>EVID-SEG-01</td><td>ISO 27001</td><td>Contratos CEVA Logistics y purga automática de PII a 30 días</td><td>Samuel (CISO) / Karen</td><td><span class="pill p-ok">VERIFICADO</span></td></tr>
+      <tr><td>EVID-SEG-02</td><td>ISO 27001</td><td>Activación de Steam Guard (MFA) y cifrado de código Git</td><td>Samuel / Felipe</td><td><span class="pill p-ok">VERIFICADO</span></td></tr>
+      <tr><td>EVID-AMB-01</td><td>ISO 14001</td><td>Certificados de energía renovable en proveedores cloud</td><td>Sebastián (Legal)</td><td><span class="pill p-ok">VERIFICADO</span></td></tr>
+      <tr><td>EVID-AMB-02</td><td>ISO 14001</td><td>Reporte de reparabilidad de Steam Deck y repuestos</td><td>Hardware Engineering</td><td><span class="pill p-ok">VERIFICADO</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>Dashboard generado a partir de fase_auditoria_integral_valve.xlsx · Made with IBM Bob</footer>
+</div>
+</body>
+</html>
