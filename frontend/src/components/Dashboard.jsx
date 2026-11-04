@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { loadSession, logout, logoutRequest, fetchWithAuth, listComments, updateComment, deleteComment } from '../lib/api';
+import { loadSession, logout, logoutRequest, getMe, listComments, updateComment, deleteComment } from '../lib/api';
 
 function formatDate(value) {
   const ms = Date.now() - new Date(value).getTime();
@@ -82,7 +82,7 @@ export default function Dashboard() {
       return;
     }
     setUser(session.user);
-    fetchWithAuth('/api/v1/auth/me')
+    getMe()
       .then(() => listComments({ limit: 50 }))
       .then((data) => {
         const mine = (data.comments || []).filter((c) => c.userId === session.user.id);

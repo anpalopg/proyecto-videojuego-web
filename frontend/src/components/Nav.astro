@@ -1,6 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import logoSrc from '../assets/images/Logo.png';
+const BASE = import.meta.env.BASE_URL || '/';
+const defaultStore = `${BASE.endsWith('/') ? BASE : BASE + '/'}store/`;
+const STORE_URL = import.meta.env.PUBLIC_STORE_URL || defaultStore;
 ---
 
 <nav id="main-nav">
@@ -14,7 +17,7 @@ import logoSrc from '../assets/images/Logo.png';
     <li><a href="#personajes">Personajes</a></li>
     <li><a href="#historia">Historia</a></li>
     <li><a href="#comunidad">Comunidad</a></li>
-    <li><a href={import.meta.env.PUBLIC_STORE_URL || 'http://localhost:5173'} target="_blank" rel="noopener" class="play-link">▶ Jugar</a></li>
+    <li><a href={STORE_URL} target="_blank" rel="noopener" class="play-link">▶ Jugar</a></li>
   </ul>
   <div class="nav-actions">
     <slot name="actions" />
@@ -37,7 +40,7 @@ import logoSrc from '../assets/images/Logo.png';
     <button class="btn btn-red" data-auth="register">Registrarse</button>
     <button class="btn btn-outline" data-auth="login">Iniciar Sesión</button>
   </div>
-  <a href={import.meta.env.PUBLIC_STORE_URL || 'http://localhost:5173'} target="_blank" rel="noopener" class="nav-overlay-play btn-play">▶ JUGAR AHORA</a>
+  <a href={STORE_URL} target="_blank" rel="noopener" class="nav-overlay-play btn-play">▶ JUGAR AHORA</a>
 </div>
 
 <script>
@@ -91,10 +94,9 @@ import logoSrc from '../assets/images/Logo.png';
       `;
 
       document.getElementById('overlay-logout-btn')?.addEventListener('click', async () => {
-        try { await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) {}
         localStorage.removeItem('rm_token');
         localStorage.removeItem('rm_user');
-        window.location.href = '/';
+        window.location.href = window.location.pathname;
       });
     } catch (_) {}
   })();

@@ -18,9 +18,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: store-frontend
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,24 +26,32 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
-          cache-dependency-path: store-frontend/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Store Frontend
-        env:
-          VITE_BASE_PATH: /proyecto-videojuego-web/
+      - name: Build Astro Landing Page (frontend)
         run: |
+          cd frontend
+          npm install
           npm run build
-          # Create 404.html for SPA client-side routing on GitHub Pages
-          cp dist/index.html dist/404.html
+
+      - name: Build React Store (store-frontend)
+        env:
+          VITE_BASE_PATH: /proyecto-videojuego-web/store/
+        run: |
+          cd store-frontend
+          npm install
+          npm run build
+
+      - name: Combine Site Structure
+        run: |
+          mkdir -p frontend/dist/store
+          cp -r store-frontend/dist/* frontend/dist/store/
+          # Ensure SPA routing works in /store subpath on GitHub Pages
+          cp store-frontend/dist/index.html frontend/dist/store/404.html
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: store-frontend/dist
+          path: frontend/dist
 
   deploy:
     environment:

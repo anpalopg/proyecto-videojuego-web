@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import logoSrc from '../assets/images/Logo.png';
+const BASE = import.meta.env.BASE_URL || '/';
+const dashboardUrl = `${BASE.endsWith('/') ? BASE : BASE + '/'}dashboard`;
 ---
 
 <footer>
@@ -31,7 +33,7 @@ import logoSrc from '../assets/images/Logo.png';
         <ul>
           <li><a href="#inicio" data-auth="login">Iniciar Sesión</a></li>
           <li><a href="#inicio" data-auth="register">Registrarse</a></li>
-          <li><a href="/dashboard">Mi Perfil</a></li>
+          <li><a href={dashboardUrl}>Mi Perfil</a></li>
           <li><a href="#comunidad">Logros</a></li>
           <li><a href="#historia">Configuración</a></li>
         </ul>

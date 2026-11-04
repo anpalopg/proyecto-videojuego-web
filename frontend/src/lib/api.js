@@ -55,6 +55,10 @@ export async function logoutRequest() {
   return data;
 }
 
+export async function getMe() {
+  return fetchWithAuth(`${getAuthApiUrl()}/me`);
+}
+
 async function parseApiResponse(res, fallbackMessage) {
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || fallbackMessage);

@@ -1,6 +1,8 @@
 ---
 // StoreRedirect.astro — Sección que redirige al React store (Steam-like)
-const STORE_URL = import.meta.env.PUBLIC_STORE_URL || 'http://localhost:5173';
+const BASE = import.meta.env.BASE_URL || '/';
+const defaultStore = `${BASE.endsWith('/') ? BASE : BASE + '/'}store/`;
+const STORE_URL = import.meta.env.PUBLIC_STORE_URL || defaultStore;
 ---
 
 <section class="store-cta" id="tienda">
