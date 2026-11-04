@@ -37,7 +37,7 @@ jobs:
 
       - name: Build Store Frontend
         env:
-          VITE_BASE_PATH: /proyecto-videojuego/
+          VITE_BASE_PATH: /proyecto-videojuego-web/
         run: |
           npm run build
           # Create 404.html for SPA client-side routing on GitHub Pages
