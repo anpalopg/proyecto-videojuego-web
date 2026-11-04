@@ -52,7 +52,7 @@ export default function StoreNav() {
       {/* Logo */}
       <Link to="/" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
         <img
-          src="/images/logo.png"
+          src={`${import.meta.env.BASE_URL}images/logo.png`}
           alt="Logo"
           style={{
             height: 36,

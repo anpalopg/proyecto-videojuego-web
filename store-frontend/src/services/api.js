@@ -20,7 +20,8 @@ api.interceptors.response.use(
     if (err.response?.status === 401) {
       localStorage.removeItem('store_token');
       localStorage.removeItem('store_user');
-      window.location.href = '/login';
+      const base = import.meta.env.BASE_URL || '/';
+      window.location.href = `${base.replace(/\/$/, '')}/login`;
     }
     return Promise.reject(err);
   }

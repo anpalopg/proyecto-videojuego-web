@@ -125,7 +125,7 @@ export default function AuthPage({ defaultTab = 'login' }) {
       <div style={styles.card}>
         <div style={styles.logo}>
           <img
-            src="/images/logo.png"
+            src={`${import.meta.env.BASE_URL}images/logo.png`}
             alt="Logo"
             style={{
               height: 56,

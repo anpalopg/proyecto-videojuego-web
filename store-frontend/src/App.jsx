@@ -7,7 +7,7 @@ import CartPage from './pages/CartPage';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/login"    element={<AuthPage />} />
         <Route path="/register" element={<AuthPage defaultTab="register" />} />

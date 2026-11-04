@@ -115,7 +115,7 @@ export default function AssignmentsCarousel() {
   };
 
   const openFile = (filename) => {
-    window.open(`/trabajos/${encodeURIComponent(filename)}`, '_blank');
+    window.open(`${import.meta.env.BASE_URL}trabajos/${encodeURIComponent(filename)}`, '_blank');
   };
 
   const formatDate = (iso) =>
