@@ -26,7 +26,7 @@ export const GAMES_DB = {
       asset('/images/games/recessed/recessed4.jpg'),
       asset('/images/games/recessed/recessed5.jpg'),
     ],
-    externalUrl: import.meta.env.VITE_LANDING_URL || 'http://localhost:4321',
+    externalUrl: import.meta.env.VITE_LANDING_URL || 'https://anpalopg.github.io/proyecto-videojuego-web/',
     description: `Recessed Minds es un thriller psicológico de supervivencia en primera persona donde cada decisión moldea la realidad que te rodea. Despierta en los pasillos del olvido sin saber quién eres ni por qué estás ahí.\n\nA medida que avanzas, descubres fragmentos de una historia perturbadora que desafía los límites de la mente humana. ¿Puedes confiar en tus propios recuerdos? ¿O todo lo que ves es una elaborada ilusión diseñada para consumirte?`,
     features: `• Sistema de decisiones con consecuencias permanentes que alteran el mundo.\n• Mecánicas de cordura: la percepción cambia con el tiempo.\n• Narrativa ramificada con múltiples finales.\n• Banda sonora binaural que genera tensión sin música jump scare.\n• Modos: Historia, Supervivencia y Modo Pesadilla.`,
     requirements: {
